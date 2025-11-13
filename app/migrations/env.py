@@ -6,7 +6,7 @@ from sqlalchemy import pool
 from alembic import context
 
 from app.core.config import settings
-from app.models import user, district, courier, order
+from app.models import *
 from app.core.database import Base
 
 config = context.config

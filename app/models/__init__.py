@@ -1,4 +1,9 @@
-from .courier import Courier
-from .order import Order
-from .district import District
+__all__ = [
+    "courier_districts",
+]
+
 from .associations import courier_districts
+from .courier import *
+from .user import *
+from .order import *
+from .district import *
