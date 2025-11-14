@@ -35,10 +35,6 @@ class CourierUpdateBase(CourierBase):
 
 class CourierRead(CourierBase):
     id: Mapped[int] = Field(..., description="ID of courier")
-    active_order: Mapped[dict | None] = Field(default=None, description="Active order of courier")
-    avg_order_complete_time: Mapped[timedelta | None] = Field(default=None, description="Average order complete time")
-    avg_day_orders: Mapped[float | None] = Field(default=None, description="Average day orders")
-    user_sid: Mapped[UUID] = Field(..., description="User ID")
 
     districts: Mapped[list[DistrictRead]] = Field(default=None, description="List of districts")
 

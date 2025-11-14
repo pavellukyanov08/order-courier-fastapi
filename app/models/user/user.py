@@ -1,8 +1,10 @@
 from uuid import UUID, uuid4
+from typing import TYPE_CHECKING
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.database import Base
 
-from ..courier import Courier
+if TYPE_CHECKING:
+    from ..courier import Courier
 
 
 class User(Base):

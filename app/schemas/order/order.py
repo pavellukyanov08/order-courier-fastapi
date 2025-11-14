@@ -1,28 +1,34 @@
-from pydantic import BaseModel
+from xmlrpc.client import DateTime
 
-from app.schemas.courier import CourierBase
+from pydantic import BaseModel, Field
 
-
-class OrderRead(BaseModel):
-    id: int
-    name: str
-    courier_id : int
-    status_id: int
-    district_id: int
-
-    model_config = {'from_attributes': True}
+from app.schemas.user import UserRead
 
 
-class OrderWithCourier(OrderRead):
-    courier: CourierBase
-
-    model_config = {'from_attributes': True}
-
-
-class OrderCreate(BaseModel):
-    name: str
-    district: str
+class Order(BaseModel):
+    name: str = Field(..., description="Name of order")
+    created_time: DateTime = Field(..., description="Time of order creation")
+    status: int = Field(..., description="Order status")
+    district: int = Field(..., description="Order district")
 
 
-class OrderCreateResponse(OrderRead):
-    courier: CourierBase
+class OrderBase(Order):
+    pass
+
+
+class OrderCreate(OrderBase):
+    courier: UserRead
+
+
+class OrderUpdate(OrderBase):
+    completed_time: DateTime = Field(..., description="Time of order completion")
+
+
+class OrderUpdateBase(OrderBase):
+    id: int = Field(..., description="ID of order")
+    completed_time: DateTime = Field(..., description="Time of order completion")
+
+
+class OrderRead(OrderBase):
+    id: int = Field(..., description="ID of order")
+    courier: UserRead

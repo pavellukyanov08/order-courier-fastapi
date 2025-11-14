@@ -20,7 +20,7 @@ class Order(Base):
     courier_id = Column(Integer, ForeignKey('couriers.id'))
 
     status = relationship('OrderStatus', back_populates='orders', foreign_keys='Order.status_id')
-    courier = relationship('Courier', back_populates='orders', foreign_keys='Order.courier_id')
+    courier = relationship('Courier', back_populates='order', foreign_keys='Order.courier_id')
     district = relationship('District', back_populates='orders', foreign_keys='Order.district_id')
 
     def __repr__(self):

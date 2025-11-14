@@ -1,12 +1,14 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, Float, DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import JSONB, INTERVAL
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from datetime import datetime
+from typing import TYPE_CHECKING
 from ..associations import courier_districts
 
 from app.core.database import Base
-from ..user import User
-from ..order import Order
+if TYPE_CHECKING:
+    from ..user import User
+    from ..order import Order
 
 
 class Courier(Base):
@@ -24,7 +26,7 @@ class Courier(Base):
         index=True,
         comment="SID of user"
     )
-    orders: Mapped[list["Order"]]= relationship('Order', back_populates='courier')
+    order: Mapped[list["Order"]]= relationship('Order', back_populates='courier')
     districts = relationship("District",
                              secondary=courier_districts,
                              back_populates="couriers",
