@@ -1,60 +1,33 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
-from app.models.user import User
-from app.schemas.user import UserCreate, Token, UserResponse
-from app.core import UserManager, PasswordManager, database
-from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
-from app.settings.api.settings import ApiSettings
+from fastapi import APIRouter, Body
 
+from app.settings import api_settings
+from .deps import UserServiceDep
+from app.schemas.user import UserCreate
+from app.common.schemas import UserDTO
+from app.schemas.user import AuthLoginDTO, AuthLoginResponseDTO
 
 router = APIRouter(
-    prefix=ApiSettings.USERS_PREFIX,
+    prefix=api_settings.USERS_PREFIX,
 )
 
 @router.post(
     '/register',
-    response_model=UserResponse
+    response_model=UserDTO
 )
 async def register(
+    service: UserServiceDep,
     user_data: UserCreate,
-    db: Annotated[AsyncSession, Depends(database.get_db)],
-):
-    existing_user =  await get_user(db, user_data.username)
-    if existing_user:
-        raise HTTPException(status_code=HTTP_409_CONFLICT, detail="Такой пользователь уже существует")
-
-    if len(user_data.password) < 5:
-        raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="Слишком короткий пароль")
-
-    hashed_password = get_hashed_password(user_data.password)
-    new_user = User(
-        username=user_data.username,
-        hashed_password=hashed_password
+) -> UserDTO:
+    return await service.create_user(
+        data=user_data,
     )
 
-    db.add(new_user)
-    await db.commit()
-    await db.refresh(new_user)
 
-    return new_user
-
-
-@router.post('/login', response_model=Token)
-async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSessionLocal = Depends(get_session)):
-    existing_user = await authenticate_user(db, form_data.username, form_data.password)
-    if not existing_user:
-        raise HTTPException(
-            status_code=HTTP_401_UNAUTHORIZED,
-            detail="Неверный логин или пароль",
-            headers={"WWW-Authenticate": "Bearer"}
-        )
-
-    access_token_expires = timedelta(days=1)
-    access_token = create_access_token(
-        data={'sub': existing_user.username},
-        expires_delta=access_token_expires
-    )
-
-    return {"access_token": access_token, "token_type": "bearer"}
+@router.post('/login', response_model=AuthLoginResponseDTO)
+async def login(
+    service: UserServiceDep,
+    data: Annotated[AuthLoginDTO, Body(...)],
+) -> AuthLoginResponseDTO:
+    return await service.login(user_data=data)

@@ -1,3 +1,4 @@
+from sqlalchemy import String
 from sqlalchemy.orm import relationship, mapped_column, Mapped
 from ..associations import courier_districts
 
@@ -9,8 +10,8 @@ from ..order import Order
 class District(Base):
     __tablename__ = 'districts'
 
-    id: Mapped[id] = mapped_column(primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column(unique=True, nullable=False)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    name: Mapped[str] = mapped_column(String(100), unique=True)
 
     couriers: Mapped[list["Courier"]] = relationship(
         "Courier",

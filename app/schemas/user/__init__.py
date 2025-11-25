@@ -1,10 +1,13 @@
+from .user import User, UserBase, UserCreate, UserUpdate
+from .auth import AuthLoginDTO, AuthLoginResponseDTO
+
+
 __all__ = [
     "User",
     "UserBase",
     "UserCreate",
     "UserUpdate",
-    "UserUpdateBase",
-    "UserRead",
+    "AuthLoginDTO",
+    "AuthLoginResponseDTO",
 ]
 
-from .user import User, UserBase, UserCreate, UserUpdate, UserUpdateBase, UserRead

@@ -8,14 +8,14 @@ class DateTimeManager:
         return datetime.now(tz=timezone.utc)
 
     @staticmethod
-    def get_now_in_timezone(*, tz: str) -> datetime:
+    def get_now_in_timezone(*, time_zone: str) -> datetime:
         try:
-            return datetime.now(ZoneInfo(key=tz))
+            return datetime.now(ZoneInfo(key=time_zone))
         except Exception as e:
-            raise ValueError(f"Incorrect timezone: {tz}") from e
+            raise ValueError(f"Incorrect timezone: {timezone}") from e
 
     @staticmethod
-    def convert_to_utc(*, dt: datetime) -> datetime:
-        if dt.tzinfo is None:
-            return dt.replace(tzinfo=timezone.utc)
-        return dt.astimezone(tz=timezone.utc)
+    def convert_to_utc(*, date_time: datetime) -> datetime:
+        if date_time.tzinfo is None:
+            return date_time.replace(tzinfo=timezone.utc)
+        return date_time.astimezone(tz=timezone.utc)

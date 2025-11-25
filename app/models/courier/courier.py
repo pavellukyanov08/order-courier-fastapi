@@ -1,40 +1,42 @@
-from sqlalchemy import Column, Integer, Float, DateTime, ForeignKey
+from sqlalchemy import ForeignKey, DateTime
 from sqlalchemy.dialects.postgresql import JSONB, INTERVAL
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from datetime import datetime
 from typing import TYPE_CHECKING
-from ..associations import courier_districts
+from uuid import UUID
 
 from app.core.database import Base
+from ..associations import courier_districts
+
 if TYPE_CHECKING:
-    from ..user import User
     from ..order import Order
+    from ..district import District
+    from app.common.models import User
 
 
 class Courier(Base):
     __tablename__ = 'couriers'
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    active_order = Column(JSONB, nullable=True)
-    avg_order_complete_time = Column(INTERVAL)
-    avg_day_orders = Column(Float)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    active_order: Mapped[dict | None] = mapped_column(JSONB)
+    avg_order_complete_time: Mapped[float | None] = mapped_column(INTERVAL)
+    avg_day_orders: Mapped[float | None] = mapped_column()
 
-    register_at = Column(DateTime, default=datetime.utcnow)
+    register_at: Mapped[datetime] = mapped_column(DateTime())
 
-    user_sid: Mapped["User"] = mapped_column(
-        ForeignKey("users.id", ondelete="CASCADE"),
+    user_sid: Mapped[UUID] = mapped_column(
+        ForeignKey("user.sid", ondelete="CASCADE"),
         index=True,
         comment="SID of user"
     )
-    order: Mapped[list["Order"]]= relationship('Order', back_populates='courier')
-    districts = relationship("District",
-                             secondary=courier_districts,
-                             back_populates="couriers",
-                             lazy='selectin'
+    districts: Mapped[list["District"]] = relationship(
+        "District",
+        back_populates='couriers',
+        secondary=courier_districts,
+        lazy='selectin'
     )
-    user: Mapped["User"] = relationship(
-        back_populates="courier"
-    )
+    order: Mapped["Order"] = relationship('Order', back_populates='courier')
+    user: Mapped["User"] = relationship("User", back_populates="courier")
 
     def __repr__(self):
         return f"Курьер {self.user.username}"

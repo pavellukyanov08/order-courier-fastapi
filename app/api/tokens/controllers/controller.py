@@ -1,22 +1,22 @@
 from fastapi import APIRouter, Body
 from typing import Annotated
-from app.settings.api import settings
-from app.tokens import schemas
-from app.api.deps import TokenServiceDep
-from app.tokens.schemas import GenerateTokenPairDTO
+from app.settings import api_settings
+from app.schemas.tokens import TokenPairDTO, GenerateTokenPairDTO
+from app.api.tokens.controllers.deps import TokenServiceDep
 
 
 router = APIRouter(
-    prefix=settings.ApiSettings.AUTH_TOKENS_PREFIX,
+    prefix=api_settings.AUTH_TOKENS_PREFIX,
 )
 
+
 @router.post(
-    path='',
-    response_model=schemas.TokenPairDTO
+    path='/create',
+    response_model=TokenPairDTO
 )
 async def create_token_pair(
     service: TokenServiceDep,
     data: Annotated[GenerateTokenPairDTO, Body(...)]
-) -> schemas.TokenDataDTO:
+) -> TokenPairDTO:
 
     return await service.create_token_pair(data)

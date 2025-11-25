@@ -1,23 +1,17 @@
-from datetime import timedelta, datetime
-from typing import Optional, Any
+from datetime import datetime
+from typing import Any
 
 from jose import jwt
 from passlib.context import CryptContext
 import os
 
 from dotenv import load_dotenv
-from sqlalchemy import select
-
-from app.core.database import AsyncSessionLocal
-from app.models.user import User
 
 load_dotenv()
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 if not SECRET_KEY:
     raise RuntimeError("SECRET_KEY environment variable not set")
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class JWTAuth:
@@ -43,29 +37,31 @@ class JWTAuth:
 
 
 class PasswordManager:
-    @staticmethod
-    def get_hashed_password(password: str) -> str:
-        return pwd_context.hash(password)
+    _pwd_context: CryptContext = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-    @staticmethod
-    def verify_password(password: str, hashed_password: str) -> bool:
-        return pwd_context.verify(password, hashed_password)
+    @classmethod
+    def get_hashed_password(cls, password: str) -> str:
+        return cls._pwd_context.hash(secret=password)
+
+    @classmethod
+    def verify_password(cls, password: str, hashed_password: str) -> bool:
+        return cls._pwd_context.verify(password, hashed_password)
 
 
-class UserManager:
-    def __init__(self, *, db: AsyncSessionLocal, username: str) -> None:
-        self._db = db
-        self._username = username
-
-    async def get_user(self) -> User | None:
-        result = await self._db.execute(select(User).where(User.username == self._username))
-        return result.scalar_one_or_none()
-
-    async def authenticate_user(self, *, password: str) -> User | None:
-        user = await self.get_user()
-        if not user or not password_manager.verify_password(password, user.hashed_password):
-            return None
-        return user
+# class UserManager:
+#     def __init__(self, *, db: AsyncSessionLocal, username: str) -> None:
+#         self._db = db
+#         self._username = username
+#
+#     async def get_user(self) -> User | None:
+#         result = await self._db.execute(select(User).where(User.username == self._username))
+#         return result.scalar_one_or_none()
+#
+#     async def authenticate_user(self, *, password: str) -> User | None:
+#         user = await self.get_user()
+#         if not user or not password_manager.verify_password(password, user.hashed_password):
+#             return None
+#         return user
 
 
 password_manager = PasswordManager()

@@ -1,0 +1,48 @@
+services:
+  app:
+    container_name: ordercourier_app
+    build:
+      context: .
+    ports:
+      - "9999:8000"
+    depends_on:
+      - db
+    restart: always
+    env_file:
+      - .env.docker
+
+  db:
+    container_name: ordercourier_db
+    image: postgres:latest
+    ports:
+      - "5431:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    networks:
+      - ordercourier_network
+    env_file:
+      - .env.docker
+
+  redis:
+    image: redis:latest
+    container_name: ordercourier_redis
+    ports:
+      - "6378:6379"
+    restart: always
+    volumes:
+      - ordercourier-redis-data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+      - ./users.acl:/usr/local/etc/redis/users.acl
+    env_file:
+      - .env.docker
+    networks:
+      - ordercourier_network
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+
+volumes:
+  ordercourier-redis-data:
+  postgres_data:
+
+networks:
+  ordercourier_network:
+    driver: bridge

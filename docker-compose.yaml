@@ -9,7 +9,7 @@ services:
       - db
     restart: always
     env_file:
-      - .env.docker
+      - .env
 
   db:
     container_name: ordercourier_db
@@ -21,7 +21,7 @@ services:
     networks:
       - ordercourier_network
     env_file:
-      - .env.docker
+      - .env
 
   redis:
     image: redis:latest
@@ -34,7 +34,7 @@ services:
       - ./redis.conf:/usr/local/etc/redis/redis.conf
       - ./users.acl:/usr/local/etc/redis/users.acl
     env_file:
-      - .env.docker
+      - .env
     networks:
       - ordercourier_network
     command: ["redis-server", "/usr/local/etc/redis/redis.conf"]

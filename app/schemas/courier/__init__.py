@@ -3,8 +3,7 @@ __all__ = [
     "CourierBase",
     "CourierCreate",
     "CourierUpdate",
-    "CourierUpdateBase",
     "CourierRead",
 ]
 
-from .courier import Courier, CourierBase, CourierCreate, CourierUpdate, CourierUpdateBase, CourierRead
+from .courier import Courier, CourierBase, CourierCreate, CourierUpdate, CourierRead

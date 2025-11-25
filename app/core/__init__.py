@@ -1,7 +1,6 @@
-from .auth import JWTAuth, PasswordManager, UserManager
+from .auth import JWTAuth, PasswordManager
 
 __all__ = [
     "JWTAuth",
     "PasswordManager",
-    "UserManager",
 ]

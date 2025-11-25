@@ -2,7 +2,10 @@ from pydantic_settings import BaseSettings
 
 
 class ApiSettings(BaseSettings):
-    AUTH_TOKENS_PREFIX = '/auth/tokens'
-    ORDERS_PREFIX = '/orders'
-    COURIERS_PREFIX = '/couriers'
-    USERS_PREFIX = '/users'
+    AUTH_TOKENS_PREFIX: str = '/auth/tokens'
+    ORDERS_PREFIX: str = '/orders'
+    COURIERS_PREFIX: str = '/couriers'
+    USERS_PREFIX: str = '/users'
+
+
+api_settings = ApiSettings()
